@@ -9,11 +9,13 @@ const turnTitle = document.querySelector("#turn-title");
 const turnBadge = document.querySelector("#turn-badge");
 const soundToggle = document.querySelector("#sound-toggle");
 const leaderboardList = document.querySelector("#leaderboard-list");
-
-const players = [
-  { name: "Player 1", position: 0, color: "p1", avatar: "avatar-coral" },
-  { name: "Player 2", position: 0, color: "p2", avatar: "avatar-blue" }
-];
+const setupCard = document.querySelector("#setup-card");
+const gameLayout = document.querySelector("#game-layout");
+const playerCountSelect = document.querySelector("#player-count-select");
+const nameFields = document.querySelector("#name-fields");
+const playersList = document.querySelector("#players-list");
+const colors = ["coral", "blue", "purple", "gold"];
+const STATS_KEY = "up-and-down-leaderboard-v1";
 
 const ladders = new Map([
   [4, 14], [9, 31], [20, 38], [28, 84],
@@ -26,8 +28,8 @@ const snakes = new Map([
 ]);
 
 const dieSymbols = ["⚀", "⚁", "⚂", "⚃", "⚄", "⚅"];
-const STATS_KEY = "up-and-down-leaderboard-v1";
 
+let players = [];
 let currentPlayer = 0;
 let locked = false;
 let gameOver = false;
@@ -35,55 +37,99 @@ let audioContext;
 let soundEnabled = localStorage.getItem("up-and-down-sound") !== "off";
 let stats = loadStats();
 
+function nameKey(name) {
+  return name.trim().toLocaleLowerCase();
+}
+
 function loadStats() {
   try {
     const saved = JSON.parse(localStorage.getItem(STATS_KEY));
 
-    if (saved && Array.isArray(saved.wins) && saved.wins.length === 2) {
-      return {
-        wins: saved.wins.map((count) => Math.max(0, Number(count) || 0))
-      };
+    if (saved?.byName && typeof saved.byName === "object") {
+      return { byName: saved.byName };
+    }
+
+    if (Array.isArray(saved?.wins)) {
+      const byName = {};
+      saved.wins.forEach((wins, index) => {
+        const name = `Player ${index + 1}`;
+        byName[nameKey(name)] = {
+          name,
+          wins: Math.max(0, Number(wins) || 0)
+        };
+      });
+      return { byName };
     }
   } catch (error) {
-    console.info("Starting a fresh local leaderboard.", error);
+    console.info("Starting a fresh leaderboard.", error);
   }
 
-  return { wins: [0, 0] };
+  return { byName: {} };
 }
 
 function saveStats() {
   localStorage.setItem(STATS_KEY, JSON.stringify(stats));
 }
 
+function populateNameFields(names = []) {
+  const count = Number(playerCountSelect.value);
+  nameFields.replaceChildren();
+
+  for (let index = 0; index < count; index += 1) {
+    const label = document.createElement("label");
+    label.className = "name-field";
+    label.htmlFor = `player-name-${index}`;
+    label.textContent = `Player ${index + 1} name`;
+
+    const input = document.createElement("input");
+    input.id = `player-name-${index}`;
+    input.type = "text";
+    input.maxLength = 18;
+    input.autocomplete = "off";
+    input.placeholder = `Player ${index + 1}`;
+    input.value = names[index] || "";
+
+    label.append(input);
+    nameFields.append(label);
+  }
+}
+
 function renderLeaderboard() {
-  const rankedPlayers = players
-    .map((player, index) => ({
-      ...player,
-      index,
-      wins: stats.wins[index]
-    }))
-    .sort((a, b) => b.wins - a.wins || a.index - b.index);
+  const records = { ...stats.byName };
+
+  players.forEach((player) => {
+    const key = nameKey(player.name);
+    if (!records[key]) records[key] = { name: player.name, wins: 0 };
+  });
+
+  const ranked = Object.values(records)
+    .filter((record) =>
+      Number(record.wins) > 0 ||
+      players.some((player) => nameKey(player.name) === nameKey(record.name))
+    )
+    .sort((a, b) => b.wins - a.wins || a.name.localeCompare(b.name))
+    .slice(0, 8);
 
   leaderboardList.replaceChildren();
 
-  rankedPlayers.forEach((player, rankIndex) => {
+  ranked.forEach((record, index) => {
     const row = document.createElement("div");
     row.className = "leaderboard-row";
 
     const rank = document.createElement("span");
-    rank.className = `rank ${rankIndex === 0 ? "rank-gold" : "rank-silver"}`;
-    rank.textContent = String(rankIndex + 1);
+    rank.className = `rank ${index === 0 ? "rank-gold" : "rank-silver"}`;
+    rank.textContent = String(index + 1);
 
     const avatar = document.createElement("span");
-    avatar.className = `leader-avatar ${player.avatar}`;
-    avatar.textContent = `P${player.index + 1}`;
+    avatar.className = `leader-avatar avatar-${colors[index % colors.length]}`;
+    avatar.textContent = record.name.slice(0, 2).toUpperCase();
 
     const name = document.createElement("strong");
-    name.textContent = player.name;
+    name.textContent = record.name;
 
     const wins = document.createElement("span");
     wins.className = "win-count";
-    wins.textContent = `${player.wins} ${player.wins === 1 ? "win" : "wins"}`;
+    wins.textContent = `${record.wins} ${record.wins === 1 ? "win" : "wins"}`;
 
     row.append(rank, avatar, name, wins);
     leaderboardList.append(row);
@@ -96,7 +142,6 @@ function syncSoundButton() {
     "aria-label",
     soundEnabled ? "Turn sounds off" : "Turn sounds on"
   );
-
   soundToggle.innerHTML = soundEnabled
     ? "🔊 <span>Sound on</span>"
     : "🔇 <span>Sound off</span>";
@@ -109,45 +154,23 @@ function playSound(kind) {
   if (!AudioContextClass) return;
 
   audioContext ??= new AudioContextClass();
-
-  if (audioContext.state === "suspended") {
-    audioContext.resume();
-  }
-
-  const now = audioContext.currentTime;
+  if (audioContext.state === "suspended") audioContext.resume();
 
   const patterns = {
-    roll: [
-      [440, 0, 0.07],
-      [560, 0.09, 0.08],
-      [680, 0.18, 0.11]
-    ],
+    roll: [[440, 0, 0.07], [560, 0.09, 0.08], [680, 0.18, 0.11]],
     move: [[520, 0, 0.1]],
-    ladder: [
-      [520, 0, 0.11],
-      [660, 0.11, 0.11],
-      [780, 0.22, 0.17]
-    ],
-    snake: [
-      [440, 0, 0.12],
-      [330, 0.12, 0.13],
-      [220, 0.25, 0.2]
-    ],
-    win: [
-      [523, 0, 0.18],
-      [659, 0.13, 0.18],
-      [784, 0.26, 0.3]
-    ]
+    ladder: [[520, 0, 0.11], [660, 0.11, 0.11], [780, 0.22, 0.17]],
+    snake: [[440, 0, 0.12], [330, 0.12, 0.13], [220, 0.25, 0.2]],
+    win: [[523, 0, 0.18], [659, 0.13, 0.18], [784, 0.26, 0.3]]
   };
 
   for (const [frequency, delay, duration] of patterns[kind] || []) {
     const oscillator = audioContext.createOscillator();
     const volume = audioContext.createGain();
-    const start = now + delay;
+    const start = audioContext.currentTime + delay;
 
     oscillator.type = kind === "snake" ? "triangle" : "sine";
     oscillator.frequency.setValueAtTime(frequency, start);
-
     volume.gain.setValueAtTime(0.0001, start);
     volume.gain.exponentialRampToValueAtTime(0.11, start + 0.015);
     volume.gain.exponentialRampToValueAtTime(0.0001, start + duration);
@@ -160,18 +183,18 @@ function playSound(kind) {
 }
 
 function createBoard() {
-  for (let number = 100; number >= 1; number--) {
+  for (let number = 100; number >= 1; number -= 1) {
     const cell = document.createElement("div");
     const rowFromBottom = Math.floor((number - 1) / 10);
     const offset = (number - 1) % 10;
     const column = rowFromBottom % 2 === 0 ? offset : 9 - offset;
 
     cell.className = "cell";
-    cell.dataset.space = number;
+    cell.dataset.space = String(number);
     cell.setAttribute("role", "gridcell");
     cell.setAttribute("aria-label", `Space ${number}`);
-    cell.style.gridRow = 10 - rowFromBottom;
-    cell.style.gridColumn = column + 1;
+    cell.style.gridRow = String(10 - rowFromBottom);
+    cell.style.gridColumn = String(column + 1);
 
     const label = document.createElement("span");
     label.className = "cell-number";
@@ -181,14 +204,12 @@ function createBoard() {
     if (ladders.has(number) || snakes.has(number)) {
       const isLadder = ladders.has(number);
       const marker = document.createElement("span");
-
       cell.classList.add(isLadder ? "ladder-space" : "snake-space");
       marker.className = `cell-special ${isLadder ? "ladder" : "snake"}`;
       marker.textContent = isLadder ? "🪜" : "🐍";
       marker.title = isLadder
         ? `Ladder to space ${ladders.get(number)}`
         : `Snake to space ${snakes.get(number)}`;
-
       cell.setAttribute("aria-label", `Space ${number}, ${marker.title}`);
       cell.append(marker);
     }
@@ -202,7 +223,8 @@ function createBoard() {
 }
 
 function render() {
-  document.body.classList.toggle("face-player-two", currentPlayer === 1);
+  document.body.classList.toggle("face-player-two", currentPlayer % 2 === 1);
+  playersList.replaceChildren();
 
   for (const cell of board.children) {
     const space = Number(cell.dataset.space);
@@ -212,7 +234,7 @@ function render() {
     players.forEach((player, index) => {
       if (player.position === space) {
         const token = document.createElement("span");
-        token.className = `token ${player.color}`;
+        token.className = `token p${index + 1}`;
         token.textContent = `P${index + 1}`;
         tokenArea.append(token);
       }
@@ -220,37 +242,48 @@ function render() {
   }
 
   players.forEach((player, index) => {
-    const position = document.querySelector(`#position-${index}`);
-    const status = document.querySelector(`#player-status-${index}`);
-    const row = document.querySelector(`#player-row-${index}`);
+    const row = document.createElement("div");
+    row.className = `player-row${index === currentPlayer && !gameOver ? " active-player" : ""}`;
 
+    const avatar = document.createElement("span");
+    avatar.className = `player-avatar avatar-${colors[index % colors.length]}`;
+    avatar.textContent = `P${index + 1}`;
+
+    const info = document.createElement("div");
+    info.className = "player-info";
+
+    const name = document.createElement("strong");
+    name.textContent = player.name;
+
+    const status = document.createElement("span");
+    status.textContent = gameOver && player.position === 100
+      ? "Winner! 🎉"
+      : index === currentPlayer && !gameOver
+        ? "Your turn"
+        : player.position === 0
+          ? "Ready to roll"
+          : `On space ${player.position}`;
+
+    info.append(name, status);
+
+    const position = document.createElement("span");
+    position.className = "position-pill";
     position.textContent = player.position === 0
       ? "START"
       : String(player.position).padStart(2, "0");
 
-    row.classList.toggle(
-      "active-player",
-      index === currentPlayer && !gameOver
-    );
-
-    if (gameOver && player.position === 100) {
-      status.textContent = "Winner! 🎉";
-    } else if (index === currentPlayer && !gameOver) {
-      status.textContent = "Your turn";
-    } else if (player.position === 0) {
-      status.textContent = "Ready to roll";
-    } else {
-      status.textContent = `On space ${player.position}`;
-    }
+    row.append(avatar, info, position);
+    playersList.append(row);
   });
 
+  document.querySelector("#playing-count").textContent = `${players.length} PLAYING`;
   turnTitle.textContent = gameOver
     ? `${players[currentPlayer].name} wins!`
-    : players[currentPlayer].name;
-  turnBadge.textContent = `0${currentPlayer + 1}`;
+    : (players[currentPlayer]?.name || "Player 1");
+  turnBadge.textContent = String(currentPlayer + 1).padStart(2, "0");
 
   rollButtons.forEach((button) => {
-    button.disabled = locked || gameOver;
+    button.disabled = locked || gameOver || players.length === 0;
   });
 
   syncSoundButton();
@@ -262,18 +295,56 @@ function setMessage(lines) {
     ...lines.map((line, index) => {
       const span = document.createElement("span");
       span.textContent = line;
-
-      if (index === 0) {
-        span.style.fontWeight = "700";
-      }
-
+      if (index === 0) span.style.fontWeight = "700";
       return span;
     })
   );
 }
 
+function startGame() {
+  const count = Number(playerCountSelect.value);
+  const names = Array.from(
+    nameFields.querySelectorAll("input"),
+    (input, index) => input.value.trim() || `Player ${index + 1}`
+  );
+  const seen = new Set();
+
+  players = names.slice(0, count).map((name, index) => {
+    let finalName = name;
+    let suffix = 2;
+
+    while (seen.has(nameKey(finalName))) {
+      finalName = `${name} ${suffix++}`;
+    }
+
+    seen.add(nameKey(finalName));
+
+    return {
+      name: finalName,
+      position: 0,
+      color: `p${index + 1}`
+    };
+  });
+
+  currentPlayer = 0;
+  gameOver = false;
+  locked = false;
+  setupCard.classList.add("is-hidden");
+  gameLayout.classList.remove("is-hidden");
+  dieFace.textContent = dieSymbols[0];
+  setMessage(["Tap the dice", "to get rolling!"]);
+  render();
+}
+
+function openPlayerSetup() {
+  playerCountSelect.value = String(players.length || 2);
+  populateNameFields(players.map((player) => player.name));
+  gameLayout.classList.add("is-hidden");
+  setupCard.classList.remove("is-hidden");
+}
+
 function rollDice() {
-  if (locked || gameOver) return;
+  if (locked || gameOver || players.length === 0) return;
 
   locked = true;
   rollButtons.forEach((button) => {
@@ -298,7 +369,6 @@ function rollDice() {
     } else {
       player.position += roll;
       const landed = player.position;
-
       setMessage([`Rolled a ${roll}!`, `Moved to space ${landed}.`]);
       playSound("move");
 
@@ -314,7 +384,12 @@ function rollDice() {
 
       if (player.position === 100) {
         gameOver = true;
-        stats.wins[currentPlayer] += 1;
+
+        const key = nameKey(player.name);
+        const record = stats.byName[key] || { name: player.name, wins: 0 };
+        record.name = player.name;
+        record.wins += 1;
+        stats.byName[key] = record;
         saveStats();
 
         board.classList.add("winner-celebration");
@@ -343,6 +418,11 @@ function rollDice() {
 }
 
 function resetGame() {
+  if (players.length === 0) {
+    openPlayerSetup();
+    return;
+  }
+
   players.forEach((player) => {
     player.position = 0;
   });
@@ -353,6 +433,8 @@ function resetGame() {
   board.classList.remove("winner-celebration");
   dieFace.textContent = dieSymbols[0];
   setMessage(["Tap the dice", "to get rolling!"]);
+  setupCard.classList.add("is-hidden");
+  gameLayout.classList.remove("is-hidden");
   render();
 }
 
@@ -360,18 +442,16 @@ soundToggle.addEventListener("click", () => {
   soundEnabled = !soundEnabled;
   localStorage.setItem("up-and-down-sound", soundEnabled ? "on" : "off");
   syncSoundButton();
-
-  if (soundEnabled) {
-    playSound("move");
-  }
+  if (soundEnabled) playSound("move");
 });
 
-createBoard();
-render();
-
-rollButtons.forEach((button) => {
-  button.addEventListener("click", rollDice);
-});
-
+playerCountSelect.addEventListener("change", () => populateNameFields());
+document.querySelector("#start-game").addEventListener("click", startGame);
+document.querySelector("#edit-players").addEventListener("click", openPlayerSetup);
 document.querySelector("#reset-top").addEventListener("click", resetGame);
 document.querySelector("#reset-bottom").addEventListener("click", resetGame);
+rollButtons.forEach((button) => button.addEventListener("click", rollDice));
+
+createBoard();
+populateNameFields();
+render();

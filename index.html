@@ -11,7 +11,7 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="icon.svg">
-  <title>Chutes &amp; Ladders — A little game of ups &amp; downs</title>
+  <title>Chutes & Ladders — A little game of ups & downs</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -21,7 +21,7 @@
   <main class="app-shell">
     <header class="topbar">
       <a class="brand" href="#" aria-label="Chutes and Ladders home">
-        <span class="brand-icon">↗</span> up<span>&amp;</span>down
+        <span class="brand-icon">↗</span> up<span>&</span>down
       </a>
       <div class="topbar-note"><span class="live-dot"></span> A FRIENDLY LITTLE RACE</div>
       <div class="top-actions">
@@ -48,8 +48,7 @@
         </div>
       </div>
       <div class="setup-controls">
-        <label class="setup-count-label" for="player-count-select">
-          Number of players
+        <label class="setup-count-label" for="player-count-select">Number of players
           <select id="player-count-select">
             <option value="2">2 players</option>
             <option value="3">3 players</option>
@@ -73,6 +72,8 @@
             <span><i class="legend-snake">🐍</i> Snake</span>
           </div>
         </div>
+
+        <div class="player-stations" id="player-stations" aria-label="Player dice and positions"></div>
         <div class="board-frame">
           <div class="board" id="board" role="grid" aria-label="Game board, spaces 1 to 100"></div>
         </div>
@@ -87,16 +88,13 @@
         <section class="turn-card" aria-live="polite">
           <div class="turn-heading">
             <span class="turn-icon">✦</span>
-            <div><p class="mini-label">IT'S YOUR TURN</p><h2 id="turn-title">Player 1</h2></div>
+            <div>
+              <p class="mini-label">IT'S YOUR TURN</p>
+              <h2 id="turn-title">Player 1</h2>
+            </div>
             <span class="turn-badge" id="turn-badge">01</span>
           </div>
-          <div class="dice-area">
-            <button class="dice" id="roll-button" type="button" aria-label="Roll the dice">
-              <span id="die-face">⚀</span>
-            </button>
-            <p id="game-message">Tap the dice<br>to get rolling!</p>
-          </div>
-          <button class="roll-button" id="roll-button-bottom" type="button">Roll the dice <span>→</span></button>
+          <p class="turn-message" id="game-message" aria-live="polite">Choose your player panel and roll!</p>
           <p class="roll-hint">A six gets you an extra turn!</p>
         </section>
 
@@ -136,13 +134,8 @@
 
   <script src="game.js"></script>
   <script>
-    if (
-      "serviceWorker" in navigator &&
-      (location.protocol === "https:" || location.hostname === "localhost")
-    ) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker.register("./service-worker.js");
-      });
+    if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+      window.addEventListener('load', () => navigator.serviceWorker.register('./service-worker.js'));
     }
   </script>
 </body>

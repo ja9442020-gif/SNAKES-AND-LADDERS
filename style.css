@@ -34,7 +34,7 @@ body {
   transition: transform 0.5s ease;
 }
 
-/* Face Player 2 when it becomes their turn. */
+/* Turn the game toward Player 2. */
 body.face-player-two .app-shell {
   transform: rotate(180deg);
 }
@@ -97,11 +97,18 @@ body.face-player-two .app-shell {
   box-shadow: 0 0 0 3px #e2edda;
 }
 
+.top-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sound-button,
 .reset-button {
   display: flex;
   align-items: center;
   gap: 7px;
-  padding: 8px 13px;
+  padding: 8px 11px;
   border: 1px solid #dfded4;
   border-radius: 8px;
   color: #657063;
@@ -110,6 +117,7 @@ body.face-player-two .app-shell {
   cursor: pointer;
 }
 
+.sound-button:hover,
 .reset-button:hover,
 .text-reset:hover {
   color: var(--dark-green);
@@ -155,6 +163,7 @@ body.face-player-two .app-shell {
 .board-card,
 .turn-card,
 .players-card,
+.leaderboard-card,
 .how-card {
   border: 1px solid rgba(67, 81, 63, 0.1);
   border-radius: 13px;
@@ -251,6 +260,14 @@ body.face-player-two .app-shell {
 
 .cell:nth-child(odd) { background: #f3f6eb; }
 
+.cell.ladder-space {
+  background: linear-gradient(145deg, #f3ffec, #e5f4d9) !important;
+}
+
+.cell.snake-space {
+  background: linear-gradient(145deg, #fff0e9, #ffe0d6) !important;
+}
+
 .cell-number {
   color: #83917b;
   font-size: clamp(8px, 0.9vw, 11px);
@@ -264,14 +281,41 @@ body.face-player-two .app-shell {
   position: absolute;
   top: 50%;
   left: 50%;
-  font-size: clamp(13px, 1.6vw, 20px);
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #ffffffc9;
+  font-size: 15px;
   line-height: 1;
   transform: translate(-50%, -55%);
   filter: drop-shadow(0 1px 1px rgba(40, 50, 30, 0.12));
+  box-shadow: 0 2px 6px #35422a20;
 }
 
 .cell-special.ladder { color: var(--green); }
 .cell-special.snake { color: var(--coral); }
+
+.cell.ladder-space .cell-special {
+  animation: ladder-glow 1.8s ease-in-out infinite alternate;
+}
+
+.cell.snake-space .cell-special {
+  animation: snake-wiggle 1.4s ease-in-out infinite;
+}
+
+@keyframes ladder-glow {
+  to {
+    box-shadow: 0 0 12px #82b66f99;
+    transform: translate(-50%, -55%) scale(1.12);
+  }
+}
+
+@keyframes snake-wiggle {
+  0%, 100% { transform: translate(-50%, -55%) rotate(-8deg); }
+  50% { transform: translate(-50%, -55%) rotate(9deg); }
+}
 
 .tokens {
   position: absolute;
@@ -472,7 +516,10 @@ body.face-player-two .app-shell {
   text-align: center;
 }
 
-.players-card { padding: 15px 16px; }
+.players-card,
+.leaderboard-card {
+  padding: 14px 16px;
+}
 
 .section-heading {
   display: flex;
@@ -504,15 +551,19 @@ body.face-player-two .app-shell {
 
 .player-row.active-player .player-info strong { color: #304f37; }
 
-.player-avatar {
+.player-avatar,
+.leader-avatar {
   display: grid;
   place-items: center;
-  width: 29px;
-  height: 29px;
   border-radius: 9px;
   color: #fff;
   font-size: 9px;
   font-weight: 800;
+}
+
+.player-avatar {
+  width: 29px;
+  height: 29px;
 }
 
 .avatar-coral { background: var(--coral); }
@@ -549,6 +600,59 @@ body.face-player-two .app-shell {
   border-color: #d9e6d7;
   color: var(--dark-green);
   background: #f1f7ef;
+}
+
+.leaderboard-card {
+  background: linear-gradient(145deg, #fffefa, #fbf7e8);
+}
+
+.leaderboard-card .section-heading h3 { font-size: 14px; }
+
+.leaderboard-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  border-top: 1px solid #efeee6;
+}
+
+.rank {
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 6px;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.rank-gold { color: #956b13; background: #f8e9b5; }
+.rank-silver { color: #647181; background: #e8edf1; }
+
+.leader-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 8px;
+  font-size: 8px;
+}
+
+.leaderboard-row strong {
+  flex: 1;
+  color: #4c5649;
+  font-size: 10px;
+}
+
+.win-count {
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.leaderboard-note {
+  margin: 6px 0 0;
+  color: #a1a294;
+  font-size: 8px;
+  text-align: center;
 }
 
 .how-card {
@@ -608,6 +712,17 @@ body.face-player-two .app-shell {
   font-size: 11px;
 }
 
+.board.winner-celebration {
+  animation: winner-glow 0.8s ease-in-out 3;
+}
+
+@keyframes winner-glow {
+  50% {
+    box-shadow: 0 0 28px #f3ce5e;
+    transform: scale(1.012);
+  }
+}
+
 @media (max-width: 850px) {
   .app-shell {
     width: min(660px, calc(100% - 32px));
@@ -638,6 +753,13 @@ body.face-player-two .app-shell {
 
   .topbar { padding-bottom: 14px; }
   .topbar-note { display: none; }
+  .top-actions { gap: 5px; }
+
+  .sound-button,
+  .reset-button {
+    padding: 7px 8px;
+    font-size: 9px;
+  }
 
   .intro {
     align-items: flex-start;
@@ -682,7 +804,7 @@ body.face-player-two .app-shell {
   .board { grid-template-rows: repeat(10, minmax(0, 1fr)); }
   .cell { padding: 2px; }
   .cell-number { font-size: 8px; }
-  .cell-special { font-size: 14px; }
+  .cell-special { width: 20px; height: 20px; font-size: 13px !important; }
   .token { width: 14px; height: 14px; font-size: 7px; }
   .board-caption { padding-top: 8px; font-size: 7px; }
 
@@ -699,9 +821,11 @@ body.face-player-two .app-shell {
   }
 
   .turn-card,
-  .players-card { padding: 12px; }
+  .players-card,
+  .leaderboard-card { padding: 10px; }
 
   .turn-card { grid-row: span 2; }
+  .leaderboard-row { gap: 6px; padding: 6px 0; }
 
   .dice-area {
     gap: 9px;

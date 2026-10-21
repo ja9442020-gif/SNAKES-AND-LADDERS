@@ -1,8 +1,7 @@
 :root{--ink:#29382f;--muted:#81897f;--paper:#fffefa;--cream:#f5f3ea;--line:#e8e7dd;--green:#4f8c61;--dark-green:#376c49;--coral:#f27d68;--blue:#6c96d8;font-family:"DM Sans",sans-serif;color:var(--ink);font-synthesis:none;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased}
 *{box-sizing:border-box}
 body{margin:0;min-width:320px;min-height:100vh;background-color:var(--cream);background-image:radial-gradient(#d8d7cc .7px,transparent .7px);background-size:15px 15px}
-.app-shell{width:min(1130px,calc(100% - 56px));margin:0 auto;padding:28px 0 20px;transform-origin:center;transition:transform .5s ease}
-body.face-player-two .app-shell{transform:rotate(180deg)}
+.app-shell{width:min(1130px,calc(100% - 56px));margin:0 auto;padding:28px 0 20px}
 .topbar{display:flex;align-items:center;justify-content:space-between;padding-bottom:22px;border-bottom:1px solid #e5e3d8}
 .brand{display:flex;align-items:center;gap:3px;color:var(--ink);text-decoration:none;font:700 22px "Fredoka",sans-serif;letter-spacing:-.7px}
 .brand>span:last-child{color:var(--coral)}
@@ -50,6 +49,8 @@ body.face-player-two .app-shell{transform:rotate(180deg)}
 .token{display:grid;place-items:center;width:clamp(14px,1.7vw,20px);height:clamp(14px,1.7vw,20px);border:1.5px solid white;border-radius:50%;color:#fff;font-size:clamp(7px,.8vw,9px);font-weight:800;box-shadow:0 1px 4px #39462d45;animation:pop .24s ease-out}
 .token.p1{background:var(--coral)}
 .token.p2{background:var(--blue)}
+.token.p3{background:#9672c6}
+.token.p4{background:#c99531}
 @keyframes pop{from{transform:scale(.55)}to{transform:scale(1)}}
 .board-caption{display:flex;justify-content:space-between;align-items:center;padding:11px 2px 0;color:#9a9c8f;font-size:8px;font-weight:800;letter-spacing:1px}
 .board-caption b{margin-left:4px;color:#65725e;font-size:10px}
@@ -128,5 +129,5 @@ body.face-player-two .app-shell{transform:rotate(180deg)}
 .start-game-button{height:39px;padding:0 16px;border:0;border-radius:7px;color:white;background:var(--green);font:700 11px "DM Sans",sans-serif;cursor:pointer}
 .start-game-button:hover{background:var(--dark-green)}
 .start-game-button span{margin-left:8px;font-size:15px}
-.token.p3{background:#9672c6}
-.token.p4{background:#c99531}
+@media(max-width:700px){.setup-controls{grid-template-columns:1fr 1fr}.name-fields{grid-column:1/-1;grid-row:2;grid-template-columns:1fr 1fr}.start-game-button{grid-column:1/-1}}
+@media(max-width:420px){.setup-card{padding:17px 14px}.setup-heading h2{font-size:20px}.setup-controls{grid-template-columns:1fr}.name-fields{grid-column:auto;grid-row:auto}.start-game-button{grid-column:auto}.name-fields{grid-template-columns:1fr 1fr}.top-actions .reset-button#edit-players span{display:none}}

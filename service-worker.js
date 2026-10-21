@@ -1,4 +1,4 @@
-const CACHE_NAME = "up-and-down-v2";
+const CACHE_NAME = "up-and-down-v3";
 
 const APP_FILES = [
   "./",
@@ -55,7 +55,7 @@ self.addEventListener("fetch", (event) => {
         }
 
         return response;
-      });
+      })
     })
   );
 });

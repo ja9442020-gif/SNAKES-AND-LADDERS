@@ -49,8 +49,10 @@ function loadStats() {
       return { byName: saved.byName };
     }
 
+    // Migrate the earlier two-player leaderboard format.
     if (Array.isArray(saved?.wins)) {
       const byName = {};
+
       saved.wins.forEach((wins, index) => {
         const name = `Player ${index + 1}`;
         byName[nameKey(name)] = {
@@ -58,6 +60,7 @@ function loadStats() {
           wins: Math.max(0, Number(wins) || 0)
         };
       });
+
       return { byName };
     }
   } catch (error) {
@@ -99,7 +102,9 @@ function renderLeaderboard() {
 
   players.forEach((player) => {
     const key = nameKey(player.name);
-    if (!records[key]) records[key] = { name: player.name, wins: 0 };
+    if (!records[key]) {
+      records[key] = { name: player.name, wins: 0 };
+    }
   });
 
   const ranked = Object.values(records)
@@ -142,6 +147,7 @@ function syncSoundButton() {
     "aria-label",
     soundEnabled ? "Turn sounds off" : "Turn sounds on"
   );
+
   soundToggle.innerHTML = soundEnabled
     ? "🔊 <span>Sound on</span>"
     : "🔇 <span>Sound off</span>";
@@ -154,7 +160,10 @@ function playSound(kind) {
   if (!AudioContextClass) return;
 
   audioContext ??= new AudioContextClass();
-  if (audioContext.state === "suspended") audioContext.resume();
+
+  if (audioContext.state === "suspended") {
+    audioContext.resume();
+  }
 
   const patterns = {
     roll: [[440, 0, 0.07], [560, 0.09, 0.08], [680, 0.18, 0.11]],
@@ -204,12 +213,14 @@ function createBoard() {
     if (ladders.has(number) || snakes.has(number)) {
       const isLadder = ladders.has(number);
       const marker = document.createElement("span");
+
       cell.classList.add(isLadder ? "ladder-space" : "snake-space");
       marker.className = `cell-special ${isLadder ? "ladder" : "snake"}`;
       marker.textContent = isLadder ? "🪜" : "🐍";
       marker.title = isLadder
         ? `Ladder to space ${ladders.get(number)}`
         : `Snake to space ${snakes.get(number)}`;
+
       cell.setAttribute("aria-label", `Space ${number}, ${marker.title}`);
       cell.append(marker);
     }
@@ -223,7 +234,6 @@ function createBoard() {
 }
 
 function render() {
-  document.body.classList.toggle("face-player-two", currentPlayer % 2 === 1);
   playersList.replaceChildren();
 
   for (const cell of board.children) {
@@ -243,7 +253,8 @@ function render() {
 
   players.forEach((player, index) => {
     const row = document.createElement("div");
-    row.className = `player-row${index === currentPlayer && !gameOver ? " active-player" : ""}`;
+    row.className =
+      `player-row${index === currentPlayer && !gameOver ? " active-player" : ""}`;
 
     const avatar = document.createElement("span");
     avatar.className = `player-avatar avatar-${colors[index % colors.length]}`;
@@ -276,10 +287,13 @@ function render() {
     playersList.append(row);
   });
 
-  document.querySelector("#playing-count").textContent = `${players.length} PLAYING`;
+  document.querySelector("#playing-count").textContent =
+    `${players.length} PLAYING`;
+
   turnTitle.textContent = gameOver
     ? `${players[currentPlayer].name} wins!`
     : (players[currentPlayer]?.name || "Player 1");
+
   turnBadge.textContent = String(currentPlayer + 1).padStart(2, "0");
 
   rollButtons.forEach((button) => {
@@ -303,10 +317,12 @@ function setMessage(lines) {
 
 function startGame() {
   const count = Number(playerCountSelect.value);
+
   const names = Array.from(
     nameFields.querySelectorAll("input"),
     (input, index) => input.value.trim() || `Player ${index + 1}`
   );
+
   const seen = new Set();
 
   players = names.slice(0, count).map((name, index) => {
@@ -329,6 +345,7 @@ function startGame() {
   currentPlayer = 0;
   gameOver = false;
   locked = false;
+
   setupCard.classList.add("is-hidden");
   gameLayout.classList.remove("is-hidden");
   dieFace.textContent = dieSymbols[0];
@@ -369,6 +386,7 @@ function rollDice() {
     } else {
       player.position += roll;
       const landed = player.position;
+
       setMessage([`Rolled a ${roll}!`, `Moved to space ${landed}.`]);
       playSound("move");
 
@@ -442,7 +460,10 @@ soundToggle.addEventListener("click", () => {
   soundEnabled = !soundEnabled;
   localStorage.setItem("up-and-down-sound", soundEnabled ? "on" : "off");
   syncSoundButton();
-  if (soundEnabled) playSound("move");
+
+  if (soundEnabled) {
+    playSound("move");
+  }
 });
 
 playerCountSelect.addEventListener("change", () => populateNameFields());

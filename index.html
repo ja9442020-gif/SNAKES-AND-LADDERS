@@ -27,8 +27,9 @@
       <div class="top-actions">
         <button class="sound-button" id="sound-toggle" type="button"
           aria-pressed="true" aria-label="Turn sounds off">🔊 <span>Sound on</span></button>
+        <button class="reset-button" id="edit-players" type="button">👥 <span>Players</span></button>
         <button class="reset-button" id="reset-top" type="button"
-          aria-label="Start a new game">↻ <span>New game</span></button>
+          aria-label="Restart the game">↻ <span>Restart</span></button>
       </div>
     </header>
 
@@ -40,11 +41,36 @@
       <p class="intro-note">Climb the ladders, dodge the snakes,<br>and be the first to reach 100.</p>
     </section>
 
-    <section class="game-layout" aria-label="Snakes and ladders game">
+    <section class="setup-card" id="setup-card" aria-labelledby="setup-title">
+      <div class="setup-heading">
+        <span class="setup-icon">👋</span>
+        <div>
+          <p class="eyebrow">GATHER YOUR CREW</p>
+          <h2 id="setup-title">Who's playing?</h2>
+        </div>
+      </div>
+      <div class="setup-controls">
+        <label class="setup-count-label" for="player-count-select">
+          Number of players
+          <select id="player-count-select">
+            <option value="2">2 players</option>
+            <option value="3">3 players</option>
+            <option value="4">4 players</option>
+          </select>
+        </label>
+        <div class="name-fields" id="name-fields"></div>
+        <button class="start-game-button" id="start-game" type="button">
+          Start the game <span>→</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="game-layout is-hidden" id="game-layout" aria-label="Snakes and ladders game">
       <div class="board-card">
         <div class="board-topline">
           <div class="board-label">
-            <span class="board-label-icon">✳</span> THE GAME BOARD
+            <span class="board-label-icon">✳</span>
+            THE GAME BOARD
             <span class="board-subtitle">— 100 spaces to the top</span>
           </div>
           <div class="legend">
@@ -82,17 +108,11 @@
         </section>
 
         <section class="players-card">
-          <div class="section-heading"><h3>Players</h3><span class="player-count">2 PLAYING</span></div>
-          <div class="player-row active-player" id="player-row-0">
-            <span class="player-avatar avatar-coral">P1</span>
-            <div class="player-info"><strong>Player 1</strong><span id="player-status-0">Ready to roll</span></div>
-            <span class="position-pill" id="position-0">START</span>
+          <div class="section-heading">
+            <h3>Players</h3>
+            <span class="player-count" id="playing-count">2 PLAYING</span>
           </div>
-          <div class="player-row" id="player-row-1">
-            <span class="player-avatar avatar-blue">P2</span>
-            <div class="player-info"><strong>Player 2</strong><span id="player-status-1">Ready to roll</span></div>
-            <span class="position-pill" id="position-1">START</span>
-          </div>
+          <div id="players-list"></div>
         </section>
 
         <section class="leaderboard-card" aria-live="polite">
@@ -106,9 +126,14 @@
 
         <section class="how-card">
           <div class="how-icon">☼</div>
-          <div><h3>How to play</h3><p>Roll and race to 100. Land on a ladder to climb up; land on a snake and slide back down.</p></div>
+          <div>
+            <h3>How to play</h3>
+            <p>Roll and race to 100. Land on a ladder to climb up; land on a snake and slide back down.</p>
+          </div>
         </section>
-        <button class="text-reset" id="reset-bottom" type="button">↻ &nbsp;Start a new game</button>
+        <button class="text-reset" id="reset-bottom" type="button">
+          ↻ &nbsp;Start a new game
+        </button>
       </aside>
     </section>
 

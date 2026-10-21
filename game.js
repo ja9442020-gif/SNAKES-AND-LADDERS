@@ -29,6 +29,25 @@ let currentPlayer = 0;
 let locked = false;
 let gameOver = false;
 
+function focusCurrentTurn() {
+  const activePlayerRow = document.querySelector(
+    `#player-row-${currentPlayer}`
+  );
+
+  // Bring the current player's status into view.
+  activePlayerRow?.scrollIntoView({
+    behavior: "smooth",
+    block: "center"
+  });
+
+  // Keep the board visible during the turn.
+  board.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+}
+
+
 function createBoard() {
   for (let number = 100; number >= 1; number--) {
     const cell = document.createElement("div");
@@ -188,8 +207,13 @@ function rollDice() {
       setMessage(["Rolled a 6!", "You get another turn."]);
     }
 
-    locked = false;
-    render();
+    
+locked = false;
+render();
+
+focusCurrentTurn();
+
+
   }, 420);
 }
 

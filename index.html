@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <main class="app-shell">
@@ -23,68 +23,38 @@
       <a class="brand" href="#" aria-label="Chutes and Ladders home">
         <span class="brand-icon">↗</span> up<span>&amp;</span>down
       </a>
-
-      <div class="topbar-note">
-        <span class="live-dot"></span> A FRIENDLY LITTLE RACE
-      </div>
-
+      <div class="topbar-note"><span class="live-dot"></span> A FRIENDLY LITTLE RACE</div>
       <div class="top-actions">
-        <button
-          class="sound-button"
-          id="sound-toggle"
-          type="button"
-          aria-pressed="true"
-          aria-label="Turn sounds off"
-        >
-          🔊 <span>Sound on</span>
-        </button>
-
-        <button
-          class="reset-button"
-          id="reset-top"
-          type="button"
-          aria-label="Start a new game"
-        >
-          ↻ <span>New game</span>
-        </button>
+        <button class="sound-button" id="sound-toggle" type="button"
+          aria-pressed="true" aria-label="Turn sounds off">🔊 <span>Sound on</span></button>
+        <button class="reset-button" id="reset-top" type="button"
+          aria-label="Start a new game">↻ <span>New game</span></button>
       </div>
     </header>
 
     <section class="intro">
       <div>
         <p class="eyebrow">ROLL THE DICE · MAKE YOUR MOVE</p>
-        <h1>Every roll has a <span>twist.</span></h1>
+        <h1>Every roll has a <span>twist.</span> <span class="creator-tag">by Johnyboi</span></h1>
       </div>
-      <p class="intro-note">
-        Climb the ladders, dodge the snakes,<br>
-        and be the first to reach 100.
-      </p>
+      <p class="intro-note">Climb the ladders, dodge the snakes,<br>and be the first to reach 100.</p>
     </section>
 
     <section class="game-layout" aria-label="Snakes and ladders game">
       <div class="board-card">
         <div class="board-topline">
           <div class="board-label">
-            <span class="board-label-icon">✳</span>
-            THE GAME BOARD
+            <span class="board-label-icon">✳</span> THE GAME BOARD
             <span class="board-subtitle">— 100 spaces to the top</span>
           </div>
-
           <div class="legend">
             <span><i class="legend-ladder">🪜</i> Ladder</span>
             <span><i class="legend-snake">🐍</i> Snake</span>
           </div>
         </div>
-
         <div class="board-frame">
-          <div
-            class="board"
-            id="board"
-            role="grid"
-            aria-label="Game board, spaces 1 to 100"
-          ></div>
+          <div class="board" id="board" role="grid" aria-label="Game board, spaces 1 to 100"></div>
         </div>
-
         <div class="board-caption">
           <span>START <b>01</b></span>
           <span class="caption-path"><i></i> FOLLOW THE PATH <i></i></span>
@@ -96,25 +66,15 @@
         <section class="turn-card" aria-live="polite">
           <div class="turn-heading">
             <span class="turn-icon">✦</span>
-            <div>
-              <p class="mini-label">IT'S YOUR TURN</p>
-              <h2 id="turn-title">Player 1</h2>
-            </div>
+            <div><p class="mini-label">IT'S YOUR TURN</p><h2 id="turn-title">Player 1</h2></div>
             <span class="turn-badge" id="turn-badge">01</span>
           </div>
-
           <div class="dice-area">
-            <button
-              class="dice"
-              id="roll-button"
-              type="button"
-              aria-label="Roll the dice"
-            >
+            <button class="dice" id="roll-button" type="button" aria-label="Roll the dice">
               <span id="die-face">⚀</span>
             </button>
             <p id="game-message">Tap the dice<br>to get rolling!</p>
           </div>
-
           <button class="roll-button" id="roll-button-bottom" type="button">
             Roll the dice <span>→</span>
           </button>
@@ -122,26 +82,15 @@
         </section>
 
         <section class="players-card">
-          <div class="section-heading">
-            <h3>Players</h3>
-            <span class="player-count">2 PLAYING</span>
-          </div>
-
+          <div class="section-heading"><h3>Players</h3><span class="player-count">2 PLAYING</span></div>
           <div class="player-row active-player" id="player-row-0">
             <span class="player-avatar avatar-coral">P1</span>
-            <div class="player-info">
-              <strong>Player 1</strong>
-              <span id="player-status-0">Ready to roll</span>
-            </div>
+            <div class="player-info"><strong>Player 1</strong><span id="player-status-0">Ready to roll</span></div>
             <span class="position-pill" id="position-0">START</span>
           </div>
-
           <div class="player-row" id="player-row-1">
             <span class="player-avatar avatar-blue">P2</span>
-            <div class="player-info">
-              <strong>Player 2</strong>
-              <span id="player-status-1">Ready to roll</span>
-            </div>
+            <div class="player-info"><strong>Player 2</strong><span id="player-status-1">Ready to roll</span></div>
             <span class="position-pill" id="position-1">START</span>
           </div>
         </section>
@@ -157,18 +106,9 @@
 
         <section class="how-card">
           <div class="how-icon">☼</div>
-          <div>
-            <h3>How to play</h3>
-            <p>
-              Roll and race to 100. Land on a ladder to climb up;
-              land on a snake and slide back down.
-            </p>
-          </div>
+          <div><h3>How to play</h3><p>Roll and race to 100. Land on a ladder to climb up; land on a snake and slide back down.</p></div>
         </section>
-
-        <button class="text-reset" id="reset-bottom" type="button">
-          ↻ &nbsp;Start a new game
-        </button>
+        <button class="text-reset" id="reset-bottom" type="button">↻ &nbsp;Start a new game</button>
       </aside>
     </section>
 

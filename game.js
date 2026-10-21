@@ -33,6 +33,7 @@ let players = [];
 let currentPlayer = 0;
 let locked = false;
 let gameOver = false;
+let pendingLadder = null;
 let audioContext;
 let soundEnabled = localStorage.getItem("up-and-down-sound") !== "off";
 let stats = loadStats();
@@ -49,10 +50,8 @@ function loadStats() {
       return { byName: saved.byName };
     }
 
-    // Migrate the earlier two-player leaderboard format.
     if (Array.isArray(saved?.wins)) {
       const byName = {};
-
       saved.wins.forEach((wins, index) => {
         const name = `Player ${index + 1}`;
         byName[nameKey(name)] = {
@@ -60,7 +59,6 @@ function loadStats() {
           wins: Math.max(0, Number(wins) || 0)
         };
       });
-
       return { byName };
     }
   } catch (error) {
@@ -102,9 +100,7 @@ function renderLeaderboard() {
 
   players.forEach((player) => {
     const key = nameKey(player.name);
-    if (!records[key]) {
-      records[key] = { name: player.name, wins: 0 };
-    }
+    if (!records[key]) records[key] = { name: player.name, wins: 0 };
   });
 
   const ranked = Object.values(records)
@@ -147,7 +143,6 @@ function syncSoundButton() {
     "aria-label",
     soundEnabled ? "Turn sounds off" : "Turn sounds on"
   );
-
   soundToggle.innerHTML = soundEnabled
     ? "🔊 <span>Sound on</span>"
     : "🔇 <span>Sound off</span>";
@@ -160,10 +155,7 @@ function playSound(kind) {
   if (!AudioContextClass) return;
 
   audioContext ??= new AudioContextClass();
-
-  if (audioContext.state === "suspended") {
-    audioContext.resume();
-  }
+  if (audioContext.state === "suspended") audioContext.resume();
 
   const patterns = {
     roll: [[440, 0, 0.07], [560, 0.09, 0.08], [680, 0.18, 0.11]],
@@ -212,7 +204,7 @@ function createBoard() {
 
     if (ladders.has(number) || snakes.has(number)) {
       const isLadder = ladders.has(number);
-      const marker = document.createElement("span");
+      const marker = document.createElement(isLadder ? "button" : "span");
 
       cell.classList.add(isLadder ? "ladder-space" : "snake-space");
       marker.className = `cell-special ${isLadder ? "ladder" : "snake"}`;
@@ -222,6 +214,17 @@ function createBoard() {
         : `Snake to space ${snakes.get(number)}`;
 
       cell.setAttribute("aria-label", `Space ${number}, ${marker.title}`);
+
+      if (isLadder) {
+        marker.type = "button";
+        marker.disabled = true;
+        marker.setAttribute(
+          "aria-label",
+          `Tap to climb the ladder to space ${ladders.get(number)}`
+        );
+        marker.addEventListener("click", () => climbLadder(number));
+      }
+
       cell.append(marker);
     }
 
@@ -240,6 +243,13 @@ function render() {
     const space = Number(cell.dataset.space);
     const tokenArea = cell.querySelector(".tokens");
     tokenArea.replaceChildren();
+
+    const ladderButton = cell.querySelector(".cell-special.ladder");
+    if (ladderButton) {
+      const isPending = pendingLadder?.from === space;
+      ladderButton.disabled = !isPending;
+      cell.classList.toggle("ladder-pending", isPending);
+    }
 
     players.forEach((player, index) => {
       if (player.position === space) {
@@ -297,7 +307,8 @@ function render() {
   turnBadge.textContent = String(currentPlayer + 1).padStart(2, "0");
 
   rollButtons.forEach((button) => {
-    button.disabled = locked || gameOver || players.length === 0;
+    button.disabled =
+      locked || gameOver || players.length === 0 || Boolean(pendingLadder);
   });
 
   syncSoundButton();
@@ -317,12 +328,10 @@ function setMessage(lines) {
 
 function startGame() {
   const count = Number(playerCountSelect.value);
-
   const names = Array.from(
     nameFields.querySelectorAll("input"),
     (input, index) => input.value.trim() || `Player ${index + 1}`
   );
-
   const seen = new Set();
 
   players = names.slice(0, count).map((name, index) => {
@@ -334,18 +343,13 @@ function startGame() {
     }
 
     seen.add(nameKey(finalName));
-
-    return {
-      name: finalName,
-      position: 0,
-      color: `p${index + 1}`
-    };
+    return { name: finalName, position: 0, color: `p${index + 1}` };
   });
 
   currentPlayer = 0;
   gameOver = false;
+  pendingLadder = null;
   locked = false;
-
   setupCard.classList.add("is-hidden");
   gameLayout.classList.remove("is-hidden");
   dieFace.textContent = dieSymbols[0];
@@ -361,7 +365,7 @@ function openPlayerSetup() {
 }
 
 function rollDice() {
-  if (locked || gameOver || players.length === 0) return;
+  if (locked || gameOver || players.length === 0 || pendingLadder) return;
 
   locked = true;
   rollButtons.forEach((button) => {
@@ -391,9 +395,16 @@ function rollDice() {
       playSound("move");
 
       if (ladders.has(landed)) {
-        player.position = ladders.get(landed);
-        setMessage(["Lucky climb! 🪜", `Up to space ${player.position}.`]);
-        playSound("ladder");
+        pendingLadder = {
+          from: landed,
+          to: ladders.get(landed),
+          playerIndex: currentPlayer,
+          extraTurn: roll === 6
+        };
+        setMessage([
+          "You found a ladder! 🪜",
+          `Tap it to climb to ${pendingLadder.to}.`
+        ]);
       } else if (snakes.has(landed)) {
         player.position = snakes.get(landed);
         setMessage(["Oh, a snake! 🐍", `Slid to space ${player.position}.`]);
@@ -422,17 +433,35 @@ function rollDice() {
 
     const extraTurn = roll === 6 && !gameOver;
 
-    if (!gameOver && !extraTurn) {
+    if (!gameOver && !pendingLadder && !extraTurn) {
       currentPlayer = (currentPlayer + 1) % players.length;
     }
 
-    if (extraTurn) {
+    if (extraTurn && !pendingLadder) {
       setMessage(["Rolled a 6!", "You get another turn."]);
     }
 
     locked = false;
     render();
   }, 420);
+}
+
+function climbLadder(fromSpace) {
+  if (!pendingLadder || pendingLadder.from !== fromSpace || locked) return;
+
+  const { to, playerIndex, extraTurn } = pendingLadder;
+  players[playerIndex].position = to;
+  pendingLadder = null;
+  playSound("ladder");
+  setMessage(["Up you go! 🪜", `Climbed to space ${to}.`]);
+
+  if (extraTurn) {
+    setMessage(["Lucky climb! 🪜", "Roll again — you got a six!"]);
+  } else {
+    currentPlayer = (currentPlayer + 1) % players.length;
+  }
+
+  render();
 }
 
 function resetGame() {
@@ -448,6 +477,7 @@ function resetGame() {
   currentPlayer = 0;
   locked = false;
   gameOver = false;
+  pendingLadder = null;
   board.classList.remove("winner-celebration");
   dieFace.textContent = dieSymbols[0];
   setMessage(["Tap the dice", "to get rolling!"]);
@@ -460,10 +490,7 @@ soundToggle.addEventListener("click", () => {
   soundEnabled = !soundEnabled;
   localStorage.setItem("up-and-down-sound", soundEnabled ? "on" : "off");
   syncSoundButton();
-
-  if (soundEnabled) {
-    playSound("move");
-  }
+  if (soundEnabled) playSound("move");
 });
 
 playerCountSelect.addEventListener("change", () => populateNameFields());

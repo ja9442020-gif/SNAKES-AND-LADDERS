@@ -1,4 +1,4 @@
-const CACHE_NAME = "up-and-down-v5";
+const CACHE_NAME = "up-and-down-v6";
 
 const APP_FILES = [
   "./",

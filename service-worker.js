@@ -1,5 +1,4 @@
-const CACHE_NAME = "up-and-down-v7";
-
+const CACHE_NAME = "up-and-down-v8";
 const APP_FILES = [
   "./",
   "./index.html",
@@ -10,9 +9,7 @@ const APP_FILES = [
 ];
 
 self.addEventListener("install", (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_FILES))
-  );
+  event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_FILES)));
   self.skipWaiting();
 });
 
@@ -38,18 +35,17 @@ self.addEventListener("fetch", (event) => {
   }
 
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) return cachedResponse;
-
-      return fetch(event.request).then((response) => {
+    caches.match(event.request).then((cached) =>
+      cached ||
+      fetch(event.request).then((response) => {
         if (response.ok) {
-          const responseCopy = response.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseCopy);
-          });
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then((cache) =>
+            cache.put(event.request, copy)
+          );
         }
         return response;
       })
-    })
+    )
   );
 });

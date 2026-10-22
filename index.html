@@ -4,56 +4,36 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f5f3ea">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Up & Down">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
-  <link rel="apple-touch-icon" href="icon.svg">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
   <title>Chutes & Ladders — A little game of ups & downs</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <main class="app-shell">
     <header class="topbar">
-      <a class="brand" href="#" aria-label="Chutes and Ladders home">
-        <span class="brand-icon">↗</span> up<span>&</span>down
-      </a>
+      <a class="brand" href="#" aria-label="Chutes and Ladders home"><span class="brand-icon">↗</span> up<span>&</span>down</a>
       <div class="topbar-note"><span class="live-dot"></span> A FRIENDLY LITTLE RACE</div>
-      <div class="top-actions">
-        <button class="sound-button" id="sound-toggle" type="button" aria-pressed="true" aria-label="Turn sounds off">🔊 <span>Sound on</span></button>
-        <button class="reset-button" id="edit-players" type="button">👥 <span>Players</span></button>
-        <button class="reset-button" id="reset-top" type="button" aria-label="Restart the game">↻ <span>Restart</span></button>
-      </div>
+      <div class="top-actions"><button class="sound-button" id="sound-toggle" type="button" aria-pressed="true" aria-label="Turn sounds off">🔊 <span>Sound on</span></button><button class="reset-button" id="edit-players" type="button">👥 <span>Players</span></button><button class="reset-button" id="reset-top" type="button" aria-label="Restart the game">↻ <span>Restart</span></button></div>
     </header>
 
     <section class="intro">
-      <div>
-        <p class="eyebrow">ROLL THE DICE · MAKE YOUR MOVE</p>
-        <h1>Every roll has a <span>twist.</span> <span class="creator-tag">by Johnyboi</span></h1>
-      </div>
+      <div><p class="eyebrow">ROLL THE DICE · MAKE YOUR MOVE</p><h1>Every roll has a <span>twist.</span> <span class="creator-tag">by Johnyboi</span></h1></div>
       <p class="intro-note">Climb the ladders, dodge the snakes,<br>and be the first to reach 100.</p>
     </section>
 
     <section class="setup-card" id="setup-card" aria-labelledby="setup-title">
-      <div class="setup-heading">
-        <span class="setup-icon">👋</span>
-        <div>
-          <p class="eyebrow">GATHER YOUR CREW</p>
-          <h2 id="setup-title">Who's playing?</h2>
-        </div>
-      </div>
+      <div class="setup-heading"><span class="setup-icon">👋</span><div><p class="eyebrow">GATHER YOUR CREW</p><h2 id="setup-title">Who's playing?</h2></div></div>
       <div class="setup-controls">
         <label class="setup-count-label" for="player-count-select">Number of players
-          <select id="player-count-select">
-            <option value="2">2 players</option>
-            <option value="3">3 players</option>
-            <option value="4">4 players</option>
-          </select>
+          <select id="player-count-select"><option value="2">2 players</option><option value="3">3 players</option><option value="4">4 players</option></select>
         </label>
         <div class="name-fields" id="name-fields"></div>
         <button class="start-game-button" id="start-game" type="button">Start the game <span>→</span></button>
@@ -62,81 +42,38 @@
 
     <section class="game-layout is-hidden" id="game-layout" aria-label="Snakes and ladders game">
       <div class="board-card">
-        <div class="board-topline">
-          <div class="board-label">
-            <span class="board-label-icon">✳</span> THE GAME BOARD
-            <span class="board-subtitle">— 100 spaces to the top</span>
-          </div>
-          <div class="legend">
-            <span><i class="legend-ladder">🪜</i> Ladder</span>
-            <span><i class="legend-snake">🐍</i> Snake</span>
-          </div>
+        <div class="board-topline"><div class="board-label"><span class="board-label-icon">✳</span> THE GAME BOARD <span class="board-subtitle">— 100 spaces to the top</span></div><div class="legend"><span><i class="legend-ladder">🪜</i> Ladder</span><span><i class="legend-snake">🐍</i> Snake</span></div></div>
+        <div class="board-stage">
+          <div class="corner-row corner-top" id="stations-top" aria-label="Top player dice panels"></div>
+          <div class="board-frame"><div class="board" id="board" role="grid" aria-label="Game board, spaces 1 to 100"><svg class="board-art" id="board-art" viewBox="0 0 1000 1000" aria-label="Illustrated snakes and ladders board. Ladders climb automatically when a player lands on one."></svg></div></div>
+          <div class="corner-row corner-bottom" id="stations-bottom" aria-label="Bottom player dice panels"></div>
         </div>
-
-        <div class="player-stations" id="player-stations" aria-label="Player dice and positions"></div>
-        <div class="board-frame">
-          <div class="board" id="board" role="grid" aria-label="Game board, spaces 1 to 100"></div>
-        </div>
-        <div class="board-caption">
-          <span>START <b>01</b></span>
-          <span class="caption-path"><i></i> FOLLOW THE PATH <i></i></span>
-          <span>FINISH <b>100</b></span>
-        </div>
+        <div class="board-caption"><span>START <b>01</b></span><span class="caption-path"><i></i> FOLLOW THE PATH <i></i></span><span>FINISH <b>100</b></span></div>
       </div>
 
       <aside class="sidebar">
         <section class="turn-card" aria-live="polite">
-          <div class="turn-heading">
-            <span class="turn-icon">✦</span>
-            <div>
-              <p class="mini-label">IT'S YOUR TURN</p>
-              <h2 id="turn-title">Player 1</h2>
-            </div>
-            <span class="turn-badge" id="turn-badge">01</span>
-          </div>
+          <div class="turn-heading"><span class="turn-icon">✦</span><div><p class="mini-label">IT'S YOUR TURN</p><h2 id="turn-title">Player 1</h2></div><span class="turn-badge" id="turn-badge">01</span></div>
           <p class="turn-message" id="game-message" aria-live="polite">Choose your player panel and roll!</p>
-          <p class="roll-hint">A six gets you an extra turn!</p>
+          <p class="roll-hint">Roll a 1 to enter · a 6 earns an extra turn</p>
         </section>
 
-        <section class="players-card">
-          <div class="section-heading">
-            <h3>Players</h3>
-            <span class="player-count" id="playing-count">2 PLAYING</span>
-          </div>
+        <section class="players-card"><div class="section-heading"><h3>Players</h3><span class="player-count" id="playing-count">2 PLAYING</span></div>
           <div id="players-list"></div>
         </section>
 
         <section class="leaderboard-card" aria-live="polite">
-          <div class="section-heading">
-            <h3>🏆 Hall of fame</h3>
-            <span class="player-count">ALL-TIME WINS</span>
-          </div>
+          <div class="section-heading"><h3>🏆 Hall of fame</h3><span class="player-count">ALL-TIME WINS</span></div>
           <div id="leaderboard-list"></div>
           <p class="leaderboard-note">Wins are saved on this device.</p>
         </section>
 
-        <section class="how-card">
-          <div class="how-icon">☼</div>
-          <div>
-            <h3>How to play</h3>
-            <p>Roll and race to 100. Tap a ladder when you land on it to climb; snakes slide you back down.</p>
-          </div>
-        </section>
+        <section class="how-card"><div class="how-icon">☼</div><div><h3>How to play</h3><p>Roll a 1 to enter, then race to 100. Ladders climb automatically; snakes slide you back down.</p></div></section>
         <button class="text-reset" id="reset-bottom" type="button">↻ &nbsp;Start a new game</button>
       </aside>
     </section>
-
-    <footer class="footer">
-      <span>MADE FOR A LITTLE FRIENDLY COMPETITION</span>
-      <span>GOOD LUCK OUT THERE <b>✦</b></span>
-    </footer>
+    <footer class="footer"><span>MADE FOR A LITTLE FRIENDLY COMPETITION</span><span>GOOD LUCK OUT THERE <b>✦</b></span></footer>
   </main>
-
   <script src="game.js"></script>
-  <script>
-    if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
-      window.addEventListener('load', () => navigator.serviceWorker.register('./service-worker.js'));
-    }
-  </script>
 </body>
 </html>

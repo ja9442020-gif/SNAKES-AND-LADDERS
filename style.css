@@ -203,7 +203,102 @@
 .token{width:clamp(21px,2.7vw,31px);height:clamp(21px,2.7vw,31px);border:2px solid white;border-radius:50%;font-size:clamp(14px,1.9vw,21px);line-height:1;box-shadow:0 2px 5px #182c4966,0 0 0 1px #26344966}
 .cell-number{font-size:clamp(13px,3vw,27px);text-shadow:0 1px 0 #fff,0 0 3px #fff}
 .ladder-rail-shadow{stroke-width:20}.ladder-rail{stroke-width:13}.ladder-rung-shadow{stroke-width:14}.ladder-rung{stroke-width:8}
-.snake-body-outline{stroke-width:34}.snake-body{stroke-width:26}.snake-spot{fill:#ffdc45;stroke:#167a37;stroke-width:2}.snake-head ellipse{fill:#39f26e;stroke:#087c39;stroke-width:4}.snake-eye{fill:white}.snake-pupil{r:1.8}.snake-tongue{fill:none;stroke:#f02f61;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.snake-body-outline{stroke-width:34}.snake-body{stroke-width:26}.snake-spot{r:6;fill:#ffdc45;stroke:#167a37;stroke-width:2}
+.snake-head ellipse{fill:#39f26e;stroke:#087c39;stroke-width:4}.snake-eye{r:4;fill:white}.snake-pupil{r:1.8}.snake-tongue{fill:none;stroke:#f02f61;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
 .active-station .station-identity strong{color:#173c25;font-weight:800}.active-station .station-die:not(.rolling){box-shadow:0 0 0 4px #ffe85c,0 4px 0 #8c6118,0 9px 20px #f1be354d;filter:saturate(1.25)}
 @media(max-width:850px){.player-station{width:min(100%,142px);min-height:41px;grid-template-columns:minmax(0,1fr) 36px;padding:3px 5px}.station-die{width:34px;height:34px;font-size:25px}.station-heading .player-avatar{width:25px;height:25px;flex-basis:25px;font-size:14px}.board{width:min(100%,calc(100svh - 245px))}}
 @media(max-width:520px){.board-stage{gap:4px}.corner-row{min-height:37px;gap:4px}.player-station{width:min(100%,124px);min-height:35px;grid-template-columns:minmax(0,1fr) 31px;padding:2px 4px}.station-die{width:30px;height:30px;border-radius:8px;font-size:22px}.station-heading{gap:4px}.station-heading .player-avatar{width:22px;height:22px;flex-basis:22px;font-size:12px}.station-identity strong{max-width:59px;font-size:8px}.station-identity>span{font-size:6px}.cell-number{top:3px;left:4px;font-size:clamp(11px,3.4vw,17px)}.token{width:clamp(18px,5vw,24px);height:clamp(18px,5vw,24px);font-size:14px}.board{width:min(100%,calc(100svh - 220px))}}
+
+/* Big, colorful dice and a clear number result for young players. */
+.board-card{border:2px solid #ffc857;background:linear-gradient(145deg,#fffdf4,#fff7dc);box-shadow:0 8px 24px #dd9a2930}
+.board-frame{border:2px solid #ff9f68;background:linear-gradient(135deg,#fff0c5,#d7f8e4)}
+.cell{background:#fff3a880;border-color:#e3b8b8;color:#25344e}
+.cell:nth-child(4n+2){background:#bceeff80}
+.cell:nth-child(4n+3){background:#ffc9df80}
+.cell:nth-child(4n+4){background:#d8ffc880}
+.cell-number,.cell:nth-child(odd) .cell-number{color:#29364f;font-weight:900;text-shadow:0 1px #fff,0 0 3px #fff}
+.turn-card{border:2px solid #ffd05b;background:linear-gradient(145deg,#fff9da,#fff0e9)}
+.turn-icon{background:linear-gradient(135deg,#ff8b45,#ff4e80);box-shadow:0 3px 0 #d84f54}
+.roll-result{position:relative;display:flex;align-items:center;gap:12px;min-height:72px;margin:13px 0 10px;padding:9px 14px;overflow:hidden;border:2px solid #ffc044;border-radius:16px;background:linear-gradient(110deg,#fff3a6,#ffd8ee 56%,#c9f6ff);box-shadow:0 4px 0 #e4a234,0 8px 16px #b4772940}
+.roll-result-number{display:grid;flex:0 0 52px;place-items:center;width:52px;height:52px;border:3px solid #fff;border-radius:15px;color:#fff;background:linear-gradient(145deg,#ff694f,#f02f81);box-shadow:0 3px 0 #bc326a,0 0 0 2px #ff9d4d;font:800 34px/1 "Fredoka",sans-serif;text-shadow:0 2px 0 #b63359}
+.roll-result-copy{display:flex;flex:1;min-width:0;flex-direction:column;gap:3px}
+.roll-result-copy small{color:#a36342;font-size:8px;font-weight:900;letter-spacing:1.2px}
+.roll-result-copy strong{overflow:hidden;color:#334368;font:700 16px "Fredoka",sans-serif;text-overflow:ellipsis;white-space:nowrap}
+.result-sparkle{position:absolute;right:10px;top:4px;color:#ffad18;font-size:19px;animation:sparkle-pop 1.2s ease-in-out infinite alternate}
+.roll-result.result-pop{animation:result-bounce .38s cubic-bezier(.2,.8,.3,1)}
+@keyframes result-bounce{40%{transform:scale(1.045) rotate(-1deg)}75%{transform:scale(.98) rotate(1deg)}}
+@keyframes sparkle-pop{to{transform:rotate(35deg) scale(1.3);color:#ff4c8c}}
+.player-station{width:min(100%,194px);min-height:78px;grid-template-columns:minmax(0,1fr) 70px;grid-template-rows:1fr;padding:7px 9px;border:3px solid #ffda43;border-radius:14px;background:linear-gradient(110deg,#0757b8 0 30%,#fff8ec 30%);box-shadow:0 4px 0 #b28b23,0 8px 16px #34314c35}
+.station-heading{gap:8px}
+.station-heading .player-avatar{width:32px;height:32px;flex-basis:32px;border:2px solid white;border-radius:50%;font-size:19px}
+.station-identity strong{max-width:105px;color:#283b53;font-size:11px}
+.station-identity>span{color:#607080;font-size:8px;font-weight:700}
+.station-die{grid-column:2;grid-row:1;width:64px;height:64px;border:3px solid white;border-radius:15px;color:#fff;background:linear-gradient(145deg,#ff705e,#ed357a 58%,#ad3eae);box-shadow:0 5px 0 #8b276a,0 8px 15px #3926534c;font-size:46px;text-shadow:0 2px 0 #862a6b}
+.station-die:not(:disabled){border-color:#fff26b;box-shadow:0 0 0 3px #ffde40,0 5px 0 #a3551e,0 9px 18px #371f4e65;transform:scale(1.04)}
+.active-station .station-die:not(.rolling){box-shadow:0 0 0 4px #fff26b,0 5px 0 #a3551e,0 9px 20px #f1be3570;filter:saturate(1.25)}
+.roll-button,.start-game-button{background:linear-gradient(100deg,#1fa778,#16b6a2 52%,#258fce);box-shadow:0 4px 0 #16775e}
+.roll-button:hover,.start-game-button:hover{background:linear-gradient(100deg,#14845d,#098f94 52%,#1c6fa9)}
+@media(max-width:850px){.player-station{width:min(100%,184px);min-height:70px;grid-template-columns:minmax(0,1fr) 60px;padding:6px 8px}.station-die{width:56px;height:56px;font-size:40px}.station-heading .player-avatar{width:29px;height:29px;flex-basis:29px;font-size:17px}.roll-result{min-height:66px;padding:7px 10px}.roll-result-number{flex-basis:48px;width:48px;height:48px;font-size:31px}}
+@media(max-width:520px){.corner-row{min-height:66px;gap:4px}.player-station{width:min(100%,170px);min-height:62px;grid-template-columns:minmax(0,1fr) 52px;padding:5px 6px;border-width:2px}.station-die{width:48px;height:48px;border-radius:12px;font-size:35px}.station-heading{gap:5px}.station-heading .player-avatar{width:25px;height:25px;flex-basis:25px;font-size:15px}.station-identity strong{max-width:80px;font-size:9px}.station-identity>span{font-size:7px}.roll-result{min-height:60px;margin:10px 0 8px;padding:6px 9px}.roll-result-number{flex-basis:44px;width:44px;height:44px;border-radius:13px;font-size:29px}.roll-result-copy strong{font-size:14px}.roll-result-copy small{font-size:7px}.turn-card{padding:10px}.cell{border-width:1px}}
+@media(prefers-reduced-motion:reduce){.result-sparkle{animation:none}.roll-result.result-pop{animation:none}}
+
+/* Keep the illustrated routes visible through the colorful translucent tiles. */
+.board-art{z-index:0;opacity:1}
+.cell,.cell:nth-child(odd){background-color:#fff3a880}
+.cell:nth-child(4n+2){background-color:#bceeff80}
+.cell:nth-child(4n+3){background-color:#ffc9df80}
+.cell:nth-child(4n+4){background-color:#d8ffc880}
+.cell-number{z-index:2;padding:2px 4px;border-radius:6px;background:#ffffffdf;box-shadow:0 1px 3px #26384c2a}
+.tokens{z-index:3}
+
+/* Strong outlines, saturated fills and shadows call attention to every route. */
+.board-art{filter:drop-shadow(0 1px 1px #19324755)}
+.ladder-rail-shadow{stroke:#07545d;stroke-width:24}
+.ladder-rail{stroke:#36e8f1;stroke-width:16}
+.ladder-rung-shadow{stroke:#07545d;stroke-width:17}
+.ladder-rung{stroke:#e1ffff;stroke-width:10}
+.ladder-art.is-pending .ladder-rail{stroke:#b8ff40;filter:drop-shadow(0 0 5px #a8ff3f)}
+.snake-body-outline{stroke:#075b2a;stroke-width:39;filter:drop-shadow(0 2px 2px #173d2750)}
+.snake-body{stroke:#20f05b;stroke-width:30}
+.snake-spot{fill:#ffdd24;stroke:#087331;stroke-width:2.5}
+.snake-head ellipse{fill:#50ff56;stroke:#075b2a;stroke-width:5}
+.snake-eye{fill:#fff}
+.snake-pupil{fill:#142316}
+.snake-tongue{stroke:#ff1976;stroke-width:4}
+
+/* A brighter, welcoming introduction and player setup screen. */
+.intro{position:relative;margin:15px 0 20px;padding:21px 24px;border:2px solid #ffbd58;border-radius:20px;background:linear-gradient(112deg,#fff3a6 0%,#ffe0ec 48%,#d5f6ff 100%);box-shadow:0 7px 0 #f4d17a,0 12px 24px #b87d3c20}
+.intro::after{position:absolute;right:22px;top:8px;color:#ff9c2f;content:"✦ ✧";font-size:19px;letter-spacing:7px;pointer-events:none}
+.intro h1{color:#354374;text-shadow:0 2px 0 #fff9}
+.intro h1 span:not(.creator-tag){color:#f04778}
+.intro .eyebrow{color:#8a4b97}
+.intro-note{padding:10px 13px;border:1px solid #fff;border-radius:13px;color:#395b77;background:#ffffffa8;font-weight:700;text-align:center}
+.setup-card{border:2px solid #ff9fc0;background:linear-gradient(125deg,#fff4b9 0%,#ffe1ec 52%,#ddf7ff 100%);box-shadow:0 7px 0 #e8acc0,0 12px 26px #674b6c1c}
+.setup-heading h2{color:#774b9d}
+.setup-icon{border:2px solid #fff;background:linear-gradient(145deg,#ff9b45,#ff5b85);box-shadow:0 4px 0 #cc527b}
+.setup-count-label,.name-field{color:#584873}
+.setup-count-label select,.name-field input{border:2px solid #c8e9ee;background:#fffefa;box-shadow:0 2px 0 #bde1e9}
+.setup-count-label select:focus,.name-field input:focus{border-color:#ff9a55;outline:3px solid #ffce6990}
+.start-game-button{height:44px;border-radius:12px;color:#fff;font-size:13px;box-shadow:0 5px 0 #227754,0 8px 12px #27614b35}
+.start-game-button:hover{transform:translateY(-2px)}
+@media(max-width:520px){.intro{margin:8px 0 15px;padding:17px 15px;border-radius:16px}.intro::after{right:11px;top:5px;font-size:15px}.intro-note{padding:8px 10px;text-align:left}.setup-card{padding:18px 15px;border-radius:16px}}
+
+/* Restore the original pink board treatment while leaving the intro and dice updates in place. */
+.board-card{border:1px solid rgba(67,81,63,.1);background:var(--paper);box-shadow:0 7px 24px rgba(54,66,49,.045)}
+.board-frame{padding:3px;border:1px solid #e4e4d9;border-radius:8px;background:#f5f2e7}
+.board{border:3px solid #e5ed1d;border-radius:0;background:#f8e5e5}
+.board-art{z-index:0;filter:none}
+.cell,.cell:nth-child(odd){z-index:1;border:0;background:transparent}
+.cell:nth-child(4n+2),.cell:nth-child(4n+3),.cell:nth-child(4n+4){background:transparent}
+.cell-number{padding:0;border-radius:0;background:transparent;box-shadow:none;color:#101010!important;text-shadow:0 1px 0 #fff8}
+.tokens{z-index:3}
+.ladder-rail-shadow{stroke:#237d83;stroke-width:20}
+.ladder-rail{stroke:#8ee9ee;stroke-width:13}
+.ladder-rung-shadow{stroke:#237d83;stroke-width:14}
+.ladder-rung{stroke:#b7f5f5;stroke-width:8}
+.ladder-art.is-pending .ladder-rail{stroke:#c8ff9c;filter:none}
+.snake-body-outline{stroke:#087c39;stroke-width:34;filter:none}
+.snake-body{stroke:#16dc62;stroke-width:26}
+.snake-spot{fill:#ffdc45;stroke:#167a37;stroke-width:2}
+.snake-head ellipse{fill:#39f26e;stroke:#087c39;stroke-width:4}
+.snake-tongue{stroke:#f02f61;stroke-width:3}

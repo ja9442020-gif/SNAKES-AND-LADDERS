@@ -1,4 +1,4 @@
-const CACHE_NAME = "up-and-down-v13";
+const CACHE_NAME = "up-and-down-v17";
 const APP_FILES = ["./", "./index.html", "./styles.css", "./game.js", "./manifest.webmanifest", "./icon.svg", "./apple-touch-icon.png"];
 
 self.addEventListener("install", (event) => {

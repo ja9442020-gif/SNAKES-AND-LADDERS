@@ -3,6 +3,9 @@ const stationsTop = document.querySelector("#stations-top");
 const stationsBottom = document.querySelector("#stations-bottom");
 const boardArt = document.querySelector("#board-art");
 const gameMessage = document.querySelector("#game-message");
+const rollResultNumber = document.querySelector("#roll-result-number");
+const rollResultText = document.querySelector("#roll-result-text");
+const rollResult = document.querySelector("#roll-result");
 const turnTitle = document.querySelector("#turn-title");
 const turnBadge = document.querySelector("#turn-badge");
 const soundToggle = document.querySelector("#sound-toggle");
@@ -38,6 +41,7 @@ function loadStats() {
     if (saved?.byName && typeof saved.byName === "object") {
       return { byName: saved.byName };
     }
+    // Migrate the earlier two-slot leaderboard format.
     if (Array.isArray(saved?.wins)) {
       const byName = {};
       saved.wins.forEach((wins, index) => {
@@ -383,6 +387,8 @@ function startGame() {
   currentPlayer = 0;
   gameOver = false;
   locked = false;
+  rollResultNumber.textContent = "?";
+  rollResultText.textContent = "Ready to roll!";
   setupCard.classList.add("is-hidden");
   gameLayout.classList.remove("is-hidden");
   setMessage(["Roll a 1 to enter the board.", "After entering, move by the number rolled. Ladders climb automatically."]);
@@ -465,6 +471,12 @@ function rollDice() {
   const roll = Math.floor(Math.random() * 6) + 1;
   const player = players[currentPlayer];
   player.lastRoll = roll;
+  diceButton.textContent = dieSymbols[roll - 1];
+  rollResultNumber.textContent = String(roll);
+  rollResultText.textContent = `${player.name} rolled!`;
+  rollResult.classList.remove("result-pop");
+  void rollResult.offsetWidth;
+  rollResult.classList.add("result-pop");
   playSound("roll");
 
   window.setTimeout(() => {
@@ -499,6 +511,8 @@ function resetGame() {
   currentPlayer = 0;
   locked = false;
   gameOver = false;
+  rollResultNumber.textContent = "?";
+  rollResultText.textContent = "Ready to roll!";
   board.classList.remove("winner-celebration");
   setMessage(["Roll a 1 to enter the board.", "After entering, move by the number rolled. Ladders climb automatically."]);
   setupCard.classList.add("is-hidden");

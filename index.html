@@ -14,7 +14,7 @@
   <link rel="icon" href="icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
   <title>Chutes & Ladders — A little game of ups & downs</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <main class="app-shell">
@@ -54,6 +54,7 @@
       <aside class="sidebar">
         <section class="turn-card" aria-live="polite">
           <div class="turn-heading"><span class="turn-icon">✦</span><div><p class="mini-label">IT'S YOUR TURN</p><h2 id="turn-title">Player 1</h2></div><span class="turn-badge" id="turn-badge">01</span></div>
+          <div class="roll-result" id="roll-result" aria-live="polite"><span class="roll-result-number" id="roll-result-number">?</span><span class="roll-result-copy"><small>LAST ROLL</small><strong id="roll-result-text">Ready to roll!</strong></span><span class="result-sparkle" aria-hidden="true">✦</span></div>
           <p class="turn-message" id="game-message" aria-live="polite">Choose your player panel and roll!</p>
           <p class="roll-hint">Roll a 1 to enter · a 6 earns an extra turn</p>
         </section>
